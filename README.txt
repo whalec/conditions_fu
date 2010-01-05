@@ -18,11 +18,11 @@ Everything. I've only onlined my intentions here.
   
   it would map to an active record conditions array like
   
-  ["admin IS ? and email ~= ?", true, 'camwritescode']
+  ["admin IS ? and email ~* ?", true, 'camwritescode']
 
 == SYNOPSIS:
 
-ConditionsFu::Builder(:user).blueprint do 
+ConditionsFu::Builder(:user).blueprint do |params|
   is_true     "admin"             => params[:content] if params[:admin]  == "1"
   includes    "parents_last_name" => params[:content] if params[:filter] == "surname" && !params[:content].blank?
   is_like     "parent_email"      => params[:content] if params[:filter] == "emails" && !params[:content].blank?

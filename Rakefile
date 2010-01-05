@@ -13,8 +13,8 @@ task 'gem:release' => 'test:run'
 
 Bones {
   name  'conditions_fu'
-  authors  'FIXME (who is writing this software)'
-  email  'FIXME (your e-mail)'
+  authors  'Cameron Barrie'
+  email  'camwritescode@gmail.com'
   url  'FIXME (project homepage)'
   version  ConditionsFu::VERSION
 }
