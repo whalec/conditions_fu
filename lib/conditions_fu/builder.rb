@@ -10,7 +10,7 @@ module ConditionsFu
       conditions = ""
       self.each do |condition|
         if self.last == condition
-          conditions << " #{condition[0]}"
+          conditions << "#{condition[0]}"
         else
           conditions << "#{condition[0]} #{condition[2]} "
         end
@@ -137,6 +137,7 @@ module ConditionsFu
     end
 
     def is_true(options = {}, binding = :and, &block)
+      return if options.values.include?(nil)
       if block_given?
         @conditions << ["(#{options.keys.first} = ?", true, binding.to_s.upcase]
         yield
@@ -147,6 +148,7 @@ module ConditionsFu
     end
 
     def is_false(options = {}, binding = :and, &block)
+      return if options.values.include?(nil)
       if block_given?
         @conditions << ["(#{options.keys.first} IS NOT ?", true, binding.to_s.upcase]
         yield
