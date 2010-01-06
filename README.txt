@@ -22,33 +22,27 @@ Everything. I've only onlined my intentions here.
 
 == SYNOPSIS:
 
-ConditionsFu::Builder(:user).blueprint do |params|
-  is_true     "admin"             => params[:content] if params[:admin]  == "1"
-  includes    "parents_last_name" => params[:content] if params[:filter] == "surname" && !params[:content].blank?
-  is_like     "parent_email"      => params[:content] if params[:filter] == "emails" && !params[:content].blank?
-  is_like     "nickname"          => params[:content] if params[:filter] == "nickname" && !params[:content].blank?
-  is_like     "locations.name"    => params[:content] if params[:filter] == "location" && !params[:content].blank?
-  binding(:or) do
-    includes    "last_name"       => params[:content] if params[:filter] == "surname" && !params[:content].blank?
-    is_like     "email"           => params[:content] if params[:filter] == "emails" && !params[:content].blank?
-  end  
+ConditionsFu::Builder.blueprint(:user) do
+  is_true("admin" => params[:admin])
+  includes({:parents_last_name => params[:surname]}, :or) do
+    includes({:last_name => params[:surname]}, :or)
+    is_like("parent_email" => params[:email]) do
+      is_true(:child => params[:child])
+    end
+  end
 end
+params = {:surname => "Barrie", :email => "cam@snepo.com", :child => false, :admin => true}
+conditions = ConditionsFu::Builder.make(params) 
+# => ["admin = ? AND (parents_last_name ~* ? OR last_name ~* ? OR (parent_email ILIKE ? AND child = ?))", true, "Barrie", "Barrie", "%cam@snepo.com%", true]
 
-User.find(:all, :conditions => ConditionsFu::Builder.conditions(params))
+So then you can
+User.find(:all, :conditions => ConditionsFu::Builder.make(params))
 
-or you can also not make a "blueprint" and use it in a controller directly
-
-conditions = ConditionsFu::Builder.conditions(params) do
-  is_true     "admin"             => params[:content] if params[:admin]  == "1"
-  includes    "parents_last_name" => params[:content] if params[:filter] == "surname" && !params[:content].blank?
-end
-
-User.find(:all, :conditions => conditions.to_active_record)
-
+For more examples check the specs directory.
 
 == REQUIREMENTS:
 
-Currently it only works for Postgres as it's the only DB that I work with. Patch are happily accepted though :D
+Currently it only works for Postgres as it's the only DB that I work with. Patches are happily accepted though :D
 
 == INSTALL:
 
