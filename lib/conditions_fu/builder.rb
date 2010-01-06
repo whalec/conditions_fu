@@ -47,75 +47,112 @@ module ConditionsFu
     private
     
     # Warning: Postgres ONLY
-    def includes(options = {})
+    def includes(options = {}, binding = :and, &block)
       return if options.values.include?(nil)
-      binding = get_binding_from(options)
-      @conditions << ["#{options.keys.first} ~* ?", options.values.first, binding]
+      if block_given?
+        @conditions << ["(#{options.keys.first} ~* ?", options.values.first, binding.to_s.upcase]
+        yield
+        @conditions.last.first << ")"
+      else
+        @conditions << ["#{options.keys.first} ~* ?", options.values.first, binding.to_s.upcase]
+      end
     end
 
     #Warning: Postgres ONLY
-    def is_like(options = {})
+    def is_like(options = {}, binding = :and, &block)
       return if options.values.include?(nil)
-      binding = get_binding_from(options)
-      @conditions << ["#{options.keys.first} ILIKE ?", "%#{options.values.first}%", binding]
-    end
-
-    def not_equal_to(options = {})
-      return if options.values.include?(nil)
-      binding = get_binding_from(options)
-      @conditions << ["#{options.keys.first} != ?", options.values.first, binding]
-    end
-
-    def equal_to(options = {})
-      return if options.values.include?(nil)
-      binding = get_binding_from(options)
-      @conditions << ["#{options.keys.first} = ?", options.values.first, binding]
-    end
-
-    def greater_than_or_equal_to(options = {})
-      return if options.values.include?(nil)
-      binding = get_binding_from(options)
-      @conditions << ["#{options.keys.first} >= ?", options.values.first, binding]
-    end
-
-    def greater_than(options = {})
-      return if options.values.include?(nil)
-      binding = get_binding_from(options)
-      @conditions << ["#{options.keys.first} > ?", options.values.first, binding]
-    end
-
-    def less_than_or_equal_to(options = {})
-      return if options.values.include?(nil)
-      binding = get_binding_from(options)
-      @conditions << ["#{options.keys.first} <= ?", options.values.first, binding]
-    end
-
-    def less_than(options = {})
-      return if options.values.include?(nil)
-      binding = get_binding_from(options)
-      @conditions << ["#{options.keys.first} < ?", options.values.first, binding]
-    end
-
-    def is_true(options = {})
-      binding = get_binding_from(options)
-      @conditions << ["#{options.keys.first} = ?", true, binding]
-    end
-
-    def is_false(options = {})
-      binding = get_binding_from(options)
-      @conditions << ["#{options.keys.first} IS NOT ?", true, binding]
-    end
-    
-    def binding(bind, &proc)
-      p bind
-      proc.call
-    end
-
-    def get_binding_from(options={})
-      if options[:binding].nil?
-        return "AND"
+      if block_given?
+        @conditions << ["(#{options.keys.first} ILIKE ?", "%#{options.values.first}%", binding.to_s.upcase]
+        yield
+        @conditions.last.first << ")"
       else
-        return options.delete(:binding)
+        @conditions << ["#{options.keys.first} ILIKE ?", "%#{options.values.first}%", binding.to_s.upcase]
+      end
+    end
+
+    def not_equal_to(options = {}, binding = :and, &block)
+      return if options.values.include?(nil)
+      if block_given?
+        @conditions << ["(#{options.keys.first} != ?", options.values.first, binding.to_s.upcase]
+        yield
+        @conditions.last.first << ")"
+      else
+        @conditions << ["#{options.keys.first} != ?", options.values.first, binding.to_s.upcase]
+      end
+    end
+
+    def equal_to(options = {}, binding = :and, &block)
+      return if options.values.include?(nil)
+      if block_given?
+        @conditions << ["(#{options.keys.first} = ?", options.values.first, binding.to_s.upcase]
+        yield
+        @conditions.last.first << ")"
+      else
+        @conditions << ["#{options.keys.first} = ?", options.values.first, binding.to_s.upcase]
+      end
+    end
+
+    def greater_than_or_equal_to(options = {}, binding = :and, &block)
+      return if options.values.include?(nil)
+      if block_given?
+        @conditions << ["(#{options.keys.first} >= ?", options.values.first, binding.to_s.upcase]
+        yield
+        @conditions.last.first << ")"
+      else
+        @conditions << ["#{options.keys.first} >= ?", options.values.first, binding.to_s.upcase]
+      end
+    end
+
+    def greater_than(options = {}, binding = :and, &block)
+      return if options.values.include?(nil)
+      if block_given?
+        @conditions << ["(#{options.keys.first} > ?", options.values.first, binding.to_s.upcase]
+        yield
+        @conditions.last.first << ")"
+      else
+        @conditions << ["#{options.keys.first} > ?", options.values.first, binding.to_s.upcase]
+      end
+    end
+
+    def less_than_or_equal_to(options = {}, binding = :and, &block)
+      return if options.values.include?(nil)
+      if block_given?
+        @conditions << ["(#{options.keys.first} <= ?", options.values.first, binding.to_s.upcase]
+        yield
+        @conditions.last.first << ")"
+      else
+        @conditions << ["#{options.keys.first} <= ?", options.values.first, binding.to_s.upcase]
+      end
+    end
+
+    def less_than(options = {}, binding = :and, &block)
+      return if options.values.include?(nil)
+      if block_given?
+        @conditions << ["(#{options.keys.first} < ?", options.values.first, binding.to_s.upcase]
+        yield
+        @conditions.last.first << ")"
+      else
+        @conditions << ["#{options.keys.first} < ?", options.values.first, binding.to_s.upcase]
+      end
+    end
+
+    def is_true(options = {}, binding = :and, &block)
+      if block_given?
+        @conditions << ["(#{options.keys.first} = ?", true, binding.to_s.upcase]
+        yield
+        @conditions.last.first << ")"
+      else
+        @conditions << ["#{options.keys.first} = ?", true, binding.to_s.upcase]
+      end
+    end
+
+    def is_false(options = {}, binding = :and, &block)
+      if block_given?
+        @conditions << ["(#{options.keys.first} IS NOT ?", true, binding.to_s.upcase]
+        yield
+        @conditions.last.first << ")"
+      else
+        @conditions << ["#{options.keys.first} IS NOT ?", true, binding.to_s.upcase]
       end
     end
     
@@ -141,8 +178,5 @@ module ConditionsFu
     def self.clear_blueprints!
       @blueprints = {}
     end
-
-
-
   end
 end

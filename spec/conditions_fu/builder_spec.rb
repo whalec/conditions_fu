@@ -47,20 +47,18 @@ describe ConditionsFu::Builder do
   
   it "should be able to bind conditions with an OR statement" do
     ConditionsFu::Builder.blueprint(:or_binding) do
-      is_true     "admin"             => params[:admin]
-      includes    "parents_last_name" => params[:surname]
-      is_like     "parent_email"      => params[:email]
-      is_like     "nick"              => params[:nickname]
-      is_like     "locations.name"    => params[:location]
-      binding(:or) do
-        includes    "last_name"       => params[:surname]
-        is_like     "email"           => params[:email]
+      is_true("admin" => params[:admin])
+      includes({:parents_last_name => params[:surname]}, :or) do
+        includes({:last_name => params[:surname]})
       end
+      is_like("nick" => params[:nickname])
+      is_like("locations.name" => params[:location])
+      is_like("parent_email" => params[:email])
     end
     
     params = {:surname => "Barrie", :email => "cam@snepo.com"}
     parameters = ConditionsFu::Builder.make(:or_binding, params)
-    parameters.should eql(["admin = ? AND parents_last_name ~* ? AND parent_email ILIKE ? OR last_name ~* ? OR  email ILIKE ?", true, "Barrie", "%cam@snepo.com%", "Barrie", "%cam@snepo.com%"])
+    parameters.should eql(["admin = ? AND (parents_last_name ~* ? OR last_name ~* ?) AND  parent_email ILIKE ?", true, "Barrie", "Barrie", "%cam@snepo.com%"])
   end
   
 end
