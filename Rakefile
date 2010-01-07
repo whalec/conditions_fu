@@ -15,7 +15,7 @@ Bones {
   name  'conditions_fu'
   authors  'Cameron Barrie'
   email  'camwritescode@gmail.com'
-  url  'FIXME (project homepage)'
+  url  'http://wiki.github.com/whalec/conditions_fu'
   version  ConditionsFu::VERSION
 }
 
