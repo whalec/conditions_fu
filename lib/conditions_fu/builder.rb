@@ -150,11 +150,11 @@ module ConditionsFu
     def is_false(options = {}, binding = :and, &block)
       return if options.values.include?(nil)
       if block_given?
-        @conditions << ["(#{options.keys.first} IS NOT ?", true, binding.to_s.upcase]
+        @conditions << ["(#{options.keys.first} != ?", true, binding.to_s.upcase]
         yield
         @conditions.last.first << ")"
       else
-        @conditions << ["#{options.keys.first} IS NOT ?", true, binding.to_s.upcase]
+        @conditions << ["#{options.keys.first} != ?", true, binding.to_s.upcase]
       end
     end
     
